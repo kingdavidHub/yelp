@@ -1,24 +1,48 @@
 require("dotenv").config();
 const express = require("express");
-const morgan  = require("morgan");
-
+const morgan = require("morgan");
+const db = require("./db");
 
 const app = express();
 
 const PORT = process.env.PORT || 5050;
 
 // Middleware
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(express.json());
 
 // Get all restaurants
-app.get("/api/v1/restaurants", (req, res) => {
-  return res.status(200).json({
-    status: "success",
-    data: {
-      restaurant: ["mcdonald", "wendy"],
-    },
-  });
+app.get("/api/v1/restaurants", async (req, res, next) => {
+  try {
+    await db.query("SELECT * FROM restaurants", (err, rows) => {
+      // Check if there is an error
+      if (err) {
+        res.status(500);
+        next(new Error("Database error"));
+      }
+
+      const { rows } = rows;
+      // Check if there are any results
+      if (rows.length === 0) {
+        res.status(404);
+        throw new Error("Not found");
+      }
+
+      // Return the results
+      return res.status(200).json({
+        status: "success",
+        results: rows.length,
+        data: {
+          restaurants: rows,
+        },
+      });
+    });
+  } catch (err) {
+    return res.status(500).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
 });
 
 // Get single restaurant
@@ -69,7 +93,7 @@ app.get("*", (req, res, next) => {
   next(new Error("Not found"));
 });
 
-// Global error handler 
+// Global error handler
 app.use((err, req, res, next) => {
   res.status(res.statusCode).json({
     status: "error",
