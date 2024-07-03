@@ -14,88 +14,112 @@ app.use(express.json());
 // Get all restaurants
 app.get("/api/v1/restaurants", async (req, res, next) => {
   try {
-    await db.query("SELECT * FROM restaurants", (err, rows) => {
-      // Check if there is an error
-      if (err) {
-        res.status(500);
-        next(new Error("Database error"));
-      }
+    const { rows } = await db.query("SELECT * FROM restaurants");
 
-      const { rows } = rows;
-      // Check if there are any results
-      if (rows.length === 0) {
-        res.status(404);
-        throw new Error("Not found");
-      }
-
-      // Return the results
-      return res.status(200).json({
-        status: "success",
-        results: rows.length,
-        data: {
-          restaurants: rows,
-        },
-      });
+    // Return the results
+    return res.status(200).json({
+      status: "success",
+      results: rows.length,
+      data: {
+        restaurants: rows,
+      },
     });
   } catch (err) {
-    return res.status(500).json({
-      status: "fail",
-      message: err.message,
-    });
+    console.log(err);
   }
 });
 
 // Get single restaurant
-app.get("/api/v1/restaurants/:id", (req, res) => {
+app.get("/api/v1/restaurants/:id", async (req, res) => {
   const { id } = req.params;
-  return res.status(200).json({
-    status: "success",
-    data: {
-      id,
-      restaurant: "mcdonald",
-    },
-  });
+  try {
+    const { rows } = await db.query(
+      "SELECT * FROM restaurants WHERE  id = $1",
+      [id]
+    );
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        restaurant: rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Create new restaurant
-app.post("/api/v1/restaurants", (req, res) => {
-  return res.status(201).json({
-    status: "success",
-    data: {
-      restaurant: "mcdonald",
-    },
-  });
+app.post("/api/v1/restaurants", async (req, res) => {
+  const { name, location, price_range } = req.body;
+
+  try {
+    const { rows } = await db.query(
+      "INSERT INTO restaurants(name, location, price_range) VALUES($1, $2, $3) RETURNING *",
+      [name, location, price_range]
+    );
+
+    return res.status(201).json({
+      status: "success",
+      data: {
+        restaurant: rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Update restaurant
-app.put("/api/v1/restaurants/:id", (req, res) => {
+app.put("/api/v1/restaurants/:id", async (req, res) => {
   const { id } = req.params;
-  return res.status(200).json({
-    status: "success",
-    data: {
-      id,
-      restaurant: "mcdonald",
-    },
-  });
+  const { name, location, price_range } = req.body;
+  try {
+    const { rows } = await db.query(
+      "UPDATE restaurants SET name = $1, location=$2, price_range=$3 where id=$4 RETURNING *",
+      [name, location, price_range, id]
+    );
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        restaurant: rows[0],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Delete restaurant
-app.delete("/api/v1/restaurants/:id", (req, res) => {
+app.delete("/api/v1/restaurants/:id", async (req, res) => {
   const { id } = req.params;
-  return res.status(200).json({
-    status: "success",
-  });
+  try {
+    const { rows } = await db.query(
+      "DELETE FROM restaurants WHERE id = $1 RETURNING id",
+      [id]
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: `Restaurant with the id ${rows[0].id} has been deleted`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // Error 404
 app.get("*", (req, res, next) => {
-  res.status(404);
-  next(new Error("Not found"));
+  const error = new Error("Not found");
+  error.statusCode = 404;
+  next(error);
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
-  res.status(res.statusCode).json({
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
     status: "error",
     message: err.message,
   });
