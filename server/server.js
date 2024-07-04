@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const { matchedData } = require("express-validator");
 const morgan = require("morgan");
+const cors = require("cors");
 const db = require("./db");
 const {
   checkId,
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 5050;
 // Middleware
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cors());
 
 // Get all restaurants
 app.get("/api/v1/restaurants", async (req, res, next) => {

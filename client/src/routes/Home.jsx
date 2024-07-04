@@ -6,9 +6,11 @@ import RestaurantList from "../components/RestaurantList";
 const Home = () => {
   return (
     <>
-      <Header />
-      <AddRestaurant />
-      <RestaurantList />
+      <div className="container">
+        <Header />
+        <AddRestaurant />
+        <RestaurantList />
+      </div>
     </>
   );
 };

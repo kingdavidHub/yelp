@@ -1,10 +1,53 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
+import RestaurantFinder from "../apis/RestaurantFinder";
+import { RestaurantContext } from "../context/RestaurantsContext";
 
 const RestaurantList = () => {
+  const { restaurants, setRestaurants } = useContext(RestaurantContext);
+  useEffect(() => {
+    const getRestaurants = async () => {
+      try {
+        const response = await RestaurantFinder.get("/");
+        const {
+          data: { restaurants },
+        } = response.data;
+        setRestaurants(restaurants);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getRestaurants();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await RestaurantFinder.delete(`/${id}`);
+      setRestaurants(restaurants.filter((restaurant) => restaurant.id !== id));
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // useEffect(() => {
+  //   const getRestaurants = async () => {
+  //     try {
+  //       const response = await RestaurantFinder.get("/");
+  //       const {
+  //         data: { restaurants },
+  //       } = response.data;
+  //       setRestaurants(restaurants);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   getRestaurants();
+  //   // when there is changes to the restaurants state call this UseEffect
+  // }, [restaurants]);
   return (
     <>
-      <div className="list-group container">
-        <table class="table table-hover table-dark">
+      <div className="list-group">
+        <table className="table table-hover table-dark">
           <thead className="thead-primary">
             <tr>
               <th scope="col">Restaurants</th>
@@ -16,24 +59,26 @@ const RestaurantList = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
+            {restaurants &&
+              restaurants.map(({ id, name, location, price_range }) => (
+                <tr key={id}>
+                  <td>{name}</td>
+                  <td>{location}</td>
+                  <td>{"$".repeat(price_range)}</td>
+                  <td>Rating</td>
+                  <td>
+                    <button className="btn btn-warning">Update</button>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
