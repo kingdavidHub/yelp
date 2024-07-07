@@ -3,13 +3,13 @@ import Home from "./routes/Home";
 import RestaurantDetailPage from "./routes/RestaurantDetailPage";
 import UpdatePage from "./routes/UpdatePage";
 import { RestaurantContextProvider } from "./context/RestaurantsContext";
-
-const data = "coming from App.jsx";
+import ErrorPage from "./page/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    errorElement: <ErrorPage />
   },
   {
     path: "restaurant/:id/update",
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
   },
   {
     path: "restaurant/:id/detail",
-    element: <RestaurantDetailPage data={data} />,
+    element: <RestaurantDetailPage  />,
   },
 ]);
 

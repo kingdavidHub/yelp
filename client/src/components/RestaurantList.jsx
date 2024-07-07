@@ -1,9 +1,13 @@
 import React, { useEffect, useContext } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantsContext";
+import { Link } from "react-router-dom";
 
 const RestaurantList = () => {
   const { restaurants, setRestaurants } = useContext(RestaurantContext);
+
+  
+
   useEffect(() => {
     const getRestaurants = async () => {
       try {
@@ -67,7 +71,9 @@ const RestaurantList = () => {
                   <td>{"$".repeat(price_range)}</td>
                   <td>Rating</td>
                   <td>
-                    <button className="btn btn-warning">Update</button>
+                    <Link to={`/restaurant/${id}/update`}>
+                      <button className="btn btn-warning">Update</button>
+                    </Link>
                   </td>
                   <td>
                     <button

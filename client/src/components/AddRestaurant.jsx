@@ -58,20 +58,21 @@ const AddRestaurant = () => {
             </div>
 
             <div className="col">
-              <select
-                style={{ width: "70%" }}
-                name="price_range"
-                className="custom-select my-1 mr-sm-2"
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-              >
-                <option disabled>Price Range</option>
+              <div className="form-group">
+                <select
+                  name="price_range"
+                  className="form-control custom-select my-1 mr-sm-2"
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                >
+                 <option disabled>Price Range</option>
                 <option value="1">$</option>
                 <option value="2">$$</option>
                 <option value="3">$$$</option>
                 <option value="4">$$$$</option>
                 <option value="5">$$$$$</option>
-              </select>
+                </select>
+              </div>
             </div>
 
             <div className="col">
