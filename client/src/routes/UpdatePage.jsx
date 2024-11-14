@@ -1,14 +1,13 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import UpdateRestaurant from '../components/UpdateRestaurant';
 
 const UpdatePage = () => {
-  const { id } = useParams();
-  console.log(id);
   return (
     <>
      <div>
-      <h1>Update Restaurant {id}</h1>
+      <h1 className='text-center'>Update Restaurant</h1>
       {/* Form or other content for updating the restaurant */}
+      <UpdateRestaurant />
     </div>
     </>
   )
