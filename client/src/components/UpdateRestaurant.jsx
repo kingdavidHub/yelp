@@ -25,6 +25,8 @@ const UpdateRestaurant = ({}) => {
 
     if (response.status === 200) {
       navigate("/");
+      console.log();
+      
     }
   };
 

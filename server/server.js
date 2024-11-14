@@ -86,7 +86,7 @@ app.put("/api/v1/restaurants/:id", checkIdAndPayload, async (req, res) => {
       "UPDATE restaurants SET name = $1, location=$2, price_range=$3 where id=$4 RETURNING *",
       [name, location, price_range, id]
     );
-
+    
     return res.status(200).json({
       status: "success",
       data: {
