@@ -57,7 +57,7 @@ app.get("/api/v1/restaurants/:id", checkId, async (req, res) => {
     console.log(error);
   }
 });
-
+// Get restaurants reviews
 app.get("/api/v1/restaurants/:id/reviews", checkId, async (req, res) => {
   const { id } = matchedData(req);
 
@@ -77,7 +77,7 @@ app.get("/api/v1/restaurants/:id/reviews", checkId, async (req, res) => {
     res.status(200).json({
       status: "success",
       data: {
-        reviews: rows[0],
+        reviews: rows,
       },
     });
   } catch (error) {

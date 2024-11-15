@@ -1,12 +1,29 @@
 import { useState } from "react";
+import RestaurantFinder from "../apis/RestaurantFinder";
 
-const AddReviews = () => {
+const AddReviews = ({ setReviews, restaurantId }) => {
   const [name, setName] = useState("");
   const [rating, setRating] = useState("Rating");
   const [review, setReview] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+
+    try {
+      const data = await RestaurantFinder.post(`/${restaurantId}/reviews`, {
+        name,
+        review,
+        restaurant_id: restaurantId,
+        rating,
+      });      
+
+
+      setName("");
+      setRating("Rating");
+      setReview("");
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -53,7 +70,9 @@ const AddReviews = () => {
             className="form-control"
           ></textarea>
         </div>
-        <button className="btn btn-primary mt-3" onClick={handleSubmit}>submit</button>
+        <button className="btn btn-primary mt-3" onClick={handleSubmit}>
+          submit
+        </button>
       </form>
     </div>
   );

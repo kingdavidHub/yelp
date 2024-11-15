@@ -10,9 +10,6 @@ const AddRestaurant = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    setName("");
-    setLocation("");
-    setPriceRange("Price Range");
 
     try {
       const response = await RestaurantFinder.post("/", {
@@ -25,6 +22,10 @@ const AddRestaurant = () => {
         data: { restaurant },
       } = response.data;
       addRestaurants(restaurant);
+      
+      setName("");
+      setLocation("");
+      setPriceRange("Price Range");
     } catch (error) {
       console.log(error);
     }
@@ -65,12 +66,12 @@ const AddRestaurant = () => {
                   value={priceRange}
                   onChange={(e) => setPriceRange(e.target.value)}
                 >
-                 <option disabled>Price Range</option>
-                <option value="1">$</option>
-                <option value="2">$$</option>
-                <option value="3">$$$</option>
-                <option value="4">$$$$</option>
-                <option value="5">$$$$$</option>
+                  <option disabled>Price Range</option>
+                  <option value="1">$</option>
+                  <option value="2">$$</option>
+                  <option value="3">$$$</option>
+                  <option value="4">$$$$</option>
+                  <option value="5">$$$$$</option>
                 </select>
               </div>
             </div>
