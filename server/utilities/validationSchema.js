@@ -50,7 +50,43 @@ const restaurantValidationSchema = {
   }
 }
 
+const reviewsValidationSchema = {
+  name: {
+    isLength: {
+      errorMessage: "Name must be at least 3 characters",
+      options: { min: 3 },
+    },
+    notEmpty: {
+      errorMessage: "Name cannot be empty"
+    },
+    isString: {
+      errorMessage: "Name must be a string"
+    }
+  },
+  rating : {
+    isInt: {
+      errorMessage: "Rating must be an integer"
+    },
+    notEmpty: {
+      errorMessage: "Rating cannot be empty"
+    }
+  },
+  review: {
+    isLength: {
+      errorMessage: "Review must be at least 3 characters",
+      options: { min: 3 },
+    },
+    notEmpty: {
+      errorMessage: "Review cannot be empty"
+    },
+    isString: {
+      errorMessage: "Review must be a string"
+    }
+  }
+}
+
 module.exports = {
   idValidationSchema,
-  restaurantValidationSchema
+  restaurantValidationSchema,
+  reviewsValidationSchema
 }

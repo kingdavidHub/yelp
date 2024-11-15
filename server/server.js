@@ -8,6 +8,7 @@ const {
   checkId,
   checkIdAndPayload,
   checkPayload,
+  checkIdAndReviewsPayload,
 } = require("./middleware/validationMiddleware");
 
 const app = express();
@@ -57,6 +58,66 @@ app.get("/api/v1/restaurants/:id", checkId, async (req, res) => {
   }
 });
 
+app.get("/api/v1/restaurants/:id/reviews", checkId, async (req, res) => {
+  const { id } = matchedData(req);
+
+  try {
+    const { rows } = await db.query(
+      "SELECT name, review, rating FROM reviews where restaurant_id = $1",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "No reviews found for this restaurant",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        reviews: rows[0],
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
+
+// Create restaurant reviews
+app.post(
+  "/api/v1/restaurants/:id/reviews",
+  checkIdAndReviewsPayload,
+  async (req, res) => {
+    const { id, name, rating, review } = matchedData(req);
+
+    try {
+      const { rows } = await db.query(
+        "INSERT INTO reviews(restaurant_id, name, rating, review) VALUES($1, $2, $3, $4) RETURNING *",
+        [id, name, rating, review]
+      );
+
+      delete rows[0].restaurant_id;
+
+      return res.status(201).json({
+        status: "success",
+        data: {
+          review: rows[0],
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "error",
+        message: "Internal Server Error",
+      });
+    }
+  }
+);
+
 // Create new restaurant
 app.post("/api/v1/restaurants", checkPayload, async (req, res) => {
   // Get validated data
@@ -86,7 +147,7 @@ app.put("/api/v1/restaurants/:id", checkIdAndPayload, async (req, res) => {
       "UPDATE restaurants SET name = $1, location=$2, price_range=$3 where id=$4 RETURNING *",
       [name, location, price_range, id]
     );
-    
+
     return res.status(200).json({
       status: "success",
       data: {
