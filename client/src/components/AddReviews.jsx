@@ -1,7 +1,7 @@
 import { useState } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
 
-const AddReviews = ({ setReviews, restaurantId }) => {
+const AddReviews = ({ reviewsSate, restaurantId }) => {
   const [name, setName] = useState("");
   const [rating, setRating] = useState("Rating");
   const [review, setReview] = useState("");
@@ -10,17 +10,22 @@ const AddReviews = ({ setReviews, restaurantId }) => {
     e.preventDefault();
 
     try {
-      const data = await RestaurantFinder.post(`/${restaurantId}/reviews`, {
+      const {
+        data: { data: reviewData },
+      } = await RestaurantFinder.post(`/${restaurantId}/reviews`, {
         name,
         review,
         restaurant_id: restaurantId,
         rating,
-      });      
-
+      });
 
       setName("");
       setRating("Rating");
       setReview("");
+
+      reviewsSate((prevReviews) => {
+        return [...prevReviews, reviewData.review];
+      });
     } catch (error) {
       console.log(error);
     }

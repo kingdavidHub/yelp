@@ -5,8 +5,7 @@ const UpdatePage = () => {
   return (
     <>
      <div>
-      <h1 className='text-center'>Update Restaurant</h1>
-      {/* Form or other content for updating the restaurant */}
+      <h1 className='text-center m-3'>Update Restaurant</h1>
       <UpdateRestaurant />
     </div>
     </>
