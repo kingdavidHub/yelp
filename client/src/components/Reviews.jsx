@@ -2,15 +2,16 @@ import StarRating from "./StarRating";
 
 const Reviews = ({ reviews }) => {
   const lastThreeReviews = reviews.slice(-3);
+  
   return (
     <>
-      <div className="row row-cols-3 mb-2 flex-row-reverse justify-content-between  ">
+      <div className="row row-cols-3 mb-2 justify-content-between  ">
         {lastThreeReviews &&
-          lastThreeReviews.map((review, index) => (
+          lastThreeReviews.map((review) => (
             <div
               className="card text-white bg-primary m-2"
               style={{ maxWidth: "30%" }}
-              key={index}
+              key={review.id}
             >
               <div className="card-header d-flex justify-content-between flex-wrap">
                 <span>{review.name}</span>

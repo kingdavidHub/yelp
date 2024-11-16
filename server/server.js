@@ -38,53 +38,29 @@ app.get("/api/v1/restaurants", async (req, res, next) => {
   }
 });
 
-// Get single restaurant
+// Get single restaurant & reviews
 app.get("/api/v1/restaurants/:id", checkId, async (req, res) => {
   const { id } = matchedData(req);
   try {
-    const { rows } = await db.query(
+    const { rows: restaurant } = await db.query(
       "SELECT * FROM restaurants WHERE  id = $1",
+      [id]
+    );
+
+    const { rows: reviews } = await db.query(
+      "SELECT id, name, review, rating FROM reviews where restaurant_id = $1",
       [id]
     );
 
     return res.status(200).json({
       status: "success",
       data: {
-        restaurant: rows[0],
+        restaurant: restaurant[0],
+        reviews,
       },
     });
   } catch (error) {
     console.log(error);
-  }
-});
-// Get restaurants reviews
-app.get("/api/v1/restaurants/:id/reviews", checkId, async (req, res) => {
-  const { id } = matchedData(req);
-
-  try {
-    const { rows } = await db.query(
-      "SELECT name, review, rating FROM reviews where restaurant_id = $1",
-      [id]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({
-        status: "error",
-        message: "No reviews found for this restaurant",
-      });
-    }
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        reviews: rows,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: "Internal Server Error",
-    });
   }
 });
 

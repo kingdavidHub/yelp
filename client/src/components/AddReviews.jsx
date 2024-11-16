@@ -1,31 +1,40 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
+import { RestaurantContext } from "../context/RestaurantsContext";
+import { useParams } from "react-router-dom";
 
-const AddReviews = ({ reviewsSate, restaurantId }) => {
+const AddReviews = () => {
+  const { id } = useParams();
   const [name, setName] = useState("");
   const [rating, setRating] = useState("Rating");
   const [review, setReview] = useState("");
+  const { setSelectedRestaurants } = useContext(RestaurantContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
       const {
-        data: { data: reviewData },
-      } = await RestaurantFinder.post(`/${restaurantId}/reviews`, {
+        data: {
+          data: { review: newReview },
+        },
+      } = await RestaurantFinder.post(`/${id}/reviews`, {
         name,
         review,
-        restaurant_id: restaurantId,
+        restaurant_id: id,
         rating,
       });
+
+      console.log(newReview);
 
       setName("");
       setRating("Rating");
       setReview("");
 
-      reviewsSate((prevReviews) => {
-        return [...prevReviews, reviewData.review];
-      });
+      setSelectedRestaurants((prevState) => ({
+        ...prevState,
+        reviews: [...prevState.reviews, newReview],
+      }));
     } catch (error) {
       console.log(error);
     }

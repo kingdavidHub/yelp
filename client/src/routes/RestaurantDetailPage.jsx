@@ -9,23 +9,15 @@ const RestaurantDetailPage = () => {
   const { id } = useParams();
   const { selectedRestaurants, setSelectedRestaurants } =
     useContext(RestaurantContext);
-  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const {
-          data: {
-            data: { restaurant },
-          },
+          data: { data: restaurantData },
         } = await RestaurantFinder.get(`/${id}`);
-        setSelectedRestaurants(restaurant);
 
-        const {
-          data: { data: reviewsData },
-        } = await RestaurantFinder.get(`/${id}/reviews`);
-
-        setReviews(reviewsData.reviews);
+        setSelectedRestaurants(restaurantData);
       } catch (error) {
         console.log(error);
       }
@@ -33,16 +25,18 @@ const RestaurantDetailPage = () => {
 
     fetchData();
   }, []);
-  
+
   return (
     <>
       <div className="container">
         {selectedRestaurants && (
           <>
             <div className="mt-3">
-              <h1 className="text-center m-3">{selectedRestaurants.name}</h1>
-              <Reviews reviews={reviews} />
-              <AddReviews reviewsSate={setReviews} restaurantId={id} />
+              <h1 className="text-center m-1 display-3">
+                {selectedRestaurants.restaurant.name}
+              </h1>
+              <Reviews reviews={selectedRestaurants.reviews} />
+              <AddReviews />
             </div>
           </>
         )}
