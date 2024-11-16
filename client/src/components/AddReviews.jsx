@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantsContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddReviews = () => {
   const { id } = useParams();

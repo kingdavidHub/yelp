@@ -23,14 +23,24 @@ app.use(cors());
 // Get all restaurants
 app.get("/api/v1/restaurants", async (req, res, next) => {
   try {
-    const { rows } = await db.query("SELECT * FROM restaurants");
+    const { rows: restaurantRatingData } = await db.query(
+      `SELECT restaurants.id, restaurants.name, restaurants.location, restaurants.price_range, 
+              COALESCE(reviews.count, 0) as review_count, 
+              COALESCE(reviews.average_rating, 0) as average_rating
+       FROM restaurants
+       LEFT JOIN (
+         SELECT restaurant_id, COUNT(*) as count, TRUNC(AVG(rating), 1) as average_rating 
+         FROM reviews 
+         GROUP BY restaurant_id
+       ) reviews ON restaurants.id = reviews.restaurant_id`
+    );
 
     // Return the results
     return res.status(200).json({
       status: "success",
-      results: rows.length,
+      results: restaurantRatingData.length,
       data: {
-        restaurants: rows,
+        restaurants: restaurantRatingData,
       },
     });
   } catch (err) {
@@ -43,7 +53,15 @@ app.get("/api/v1/restaurants/:id", checkId, async (req, res) => {
   const { id } = matchedData(req);
   try {
     const { rows: restaurant } = await db.query(
-      "SELECT * FROM restaurants WHERE  id = $1",
+      `SELECT restaurants.id, restaurants.name, restaurants.location, restaurants.price_range, 
+              COALESCE(reviews.count, 0) as review_count, 
+              COALESCE(reviews.average_rating, 0) as average_rating
+       FROM restaurants
+       LEFT JOIN (
+         SELECT restaurant_id, COUNT(*) as count, TRUNC(AVG(rating), 1) as average_rating 
+         FROM reviews 
+         GROUP BY restaurant_id
+       ) reviews ON restaurants.id = reviews.restaurant_id where id = $1`,
       [id]
     );
 

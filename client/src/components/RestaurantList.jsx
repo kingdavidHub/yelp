@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from "react";
 import RestaurantFinder from "../apis/RestaurantFinder";
 import { RestaurantContext } from "../context/RestaurantsContext";
 import { Link, useNavigate } from "react-router-dom";
+import StarRating from "./StarRating";
 
 const RestaurantList = () => {
   const navigate = useNavigate();
@@ -42,6 +43,19 @@ const RestaurantList = () => {
     navigate(`/restaurant/${id}/detail`);
   };
 
+  const renderRating = (average_rating, review_count) => (
+    <>
+      {review_count == 0 ? (
+        <span className="text-warning">0 reviews</span>
+      ) : (
+        <>
+          <StarRating rating={average_rating} />
+          <span className="text-warning m-2">{review_count}</span>
+        </>
+      )}
+    </>
+  );
+
   return (
     <>
       <div className="list-group">
@@ -58,30 +72,39 @@ const RestaurantList = () => {
           </thead>
           <tbody>
             {restaurants &&
-              restaurants.map(({ id, name, location, price_range }) => (
-                <tr onClick={() => handleRestaurantSelect(id)} key={id}>
-                  <td>{name}</td>
-                  <td>{location}</td>
-                  <td>{"$".repeat(price_range)}</td>
-                  <td>Rating</td>
-                  <td>
-                    <button
-                      className="btn btn-warning"
-                      onClick={(e) => handleUpdate(e, id)}
-                    >
-                      Update
-                    </button>
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={(e) => handleDelete(e, id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              restaurants.map(
+                ({
+                  id,
+                  name,
+                  location,
+                  price_range,
+                  average_rating,
+                  review_count,
+                }) => (
+                  <tr onClick={() => handleRestaurantSelect(id)} key={id}>
+                    <td>{name}</td>
+                    <td>{location}</td>
+                    <td>{"$".repeat(price_range)}</td>
+                    <td>{renderRating(average_rating, review_count)}</td>
+                    <td>
+                      <button
+                        className="btn btn-warning"
+                        onClick={(e) => handleUpdate(e, id)}
+                      >
+                        Update
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={(e) => handleDelete(e, id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )}
           </tbody>
         </table>
       </div>
